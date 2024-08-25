@@ -13,7 +13,7 @@ const createSchool =  ( req, res ) => {
 
     connection.query( checkQuery, [name], ( err, result ) => {
         if ( err )
-            return res.json("Here ??");
+            return res.json(err);
     if ( result.length > 0 )
         return res.json({message : "Already exists !!"});
     else {
