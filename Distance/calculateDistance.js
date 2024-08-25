@@ -24,7 +24,7 @@ const calculateDistance = ( userLatitude, userLongitude, callback ) => {
     
     connection.query( query, [ userLatitude, userLongitude, userLatitude ], ( error, result ) => {
         if(error)
-            return callback(error, null);
+            return callback(error+"bruh", null);
         else
         return callback(null, result);
     } )
