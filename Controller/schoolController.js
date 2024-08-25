@@ -69,7 +69,6 @@ const listSchool = ( req, res ) => {
 };
 
 const deleteSchool = ( req, res ) => {
-
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ message: "Please provide school details" });
     }   
@@ -77,30 +76,33 @@ const deleteSchool = ( req, res ) => {
     const { name } = req.body;
 
     if ( typeof name !== 'string' || name.length < 1 ) {
-        return res.json({message : "Enter a valid school name"})
+        return res.json({ message : "Enter a valid school name" });
     }
 
     const deleteQuery = "DELETE FROM school WHERE name = ?";
-    connection.query( deleteQuery, [name], ( err, result ) => {
-        if ( err ) {
+    connection.query( deleteQuery, [name], (err, result) => {
+        if (err) {
             return res.json(err);
         }
 
-        if ( result.affectedRows === 0 ){
-            return res.json({message : "School does not exist"});
+        if (result.affectedRows === 0) {
+           
+            return res.json({ message: "School does not exist" });
         }
 
         const updateIdQuery = "ALTER TABLE school AUTO_INCREMENT = 1";
-        connection.query ( updateIdQuery, (err, res) => {
-        if ( err ){
-            console.log(err);
-        }
-        else{
-            console.log("Id updated");
-        }
-        res.json({message : "Deleted sucessfully"});
-        } );
-    } );    
-}
+        connection.query(updateIdQuery, (err) => {
+            if (err) {
+                console.log("Error resetting AUTO_INCREMENT:", err);
+            } else {
+                console.log("Id updated successfully");
+            }
+
+            
+            return res.json({ message: "School deleted successfully" });
+        });
+    });
+};
+
 
 module.exports = { addSchool, listSchool, deleteSchool, getAllSchool }
