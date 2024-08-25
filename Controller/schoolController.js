@@ -21,7 +21,7 @@ const createSchool =  ( req, res ) => {
         connection.query(insertQuery, [name, address, latitude, longitude], (err, result) => {
         if ( err )
             throw err;
-        res.send("Data inserted !!");
+        res.json({message : "School inserted"});
     } )
     }
             
