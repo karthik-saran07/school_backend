@@ -73,8 +73,7 @@ const deleteSchool = ( req, res ) => {
         if ( err )
                 console.log(err);
             console.log("Id updated");
-            
-
+})
 }
 
 module.exports = { createSchool, getNearbySchool, deleteSchool, getAllSchool }
