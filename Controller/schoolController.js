@@ -41,6 +41,10 @@ const getAllSchool = ( req, res ) => {
 
 const getNearbySchool = ( req, res ) => {
     
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: "Please provide user geoloaction details" });
+    }   
+
     const userLatitude = req.body.latitude;
     const userLongitude = req.body.longitude;
     
@@ -54,6 +58,11 @@ const getNearbySchool = ( req, res ) => {
 };
 
 const deleteSchool = ( req, res ) => {
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: "Please provide school details" });
+    }   
+
     const { name } = req.body;
     const deleteQuery = "DELETE FROM school WHERE name = ?";
     connection.query( deleteQuery, [name], ( err, result ) => {
