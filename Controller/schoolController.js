@@ -3,6 +3,9 @@ const connection = require("../Model/schoolModel");
 
 const createSchool =  ( req, res ) => {
 
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ message: "Please provide school details" });
+    }   
     const {name, address, latitude, longitude} = req.body;
     
     const checkQuery = "SELECT * FROM school WHERE name = ?";
