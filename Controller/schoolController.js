@@ -59,6 +59,12 @@ const deleteSchool = ( req, res ) => {
     connection.query( deleteQuery, [name], ( err, result ) => {
         if ( err )
             return res.json(err);
+        const updateIdQuery = "ALTER TABLE school AUTO_INCREMENT = 1";
+        connection.query ( updateIdQuery, (err, res) => {
+        if ( err )
+            console.log(err);
+        console.log("Id updated");  
+    } )
         res.json({message : "Deleted sucessfully"});
     } )
 
@@ -68,7 +74,6 @@ const deleteSchool = ( req, res ) => {
                 console.log(err);
             console.log("Id updated");
             
-    } )
 
 }
 
