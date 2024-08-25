@@ -58,7 +58,7 @@ const deleteSchool = ( req, res ) => {
     const deleteQuery = "DELETE FROM school WHERE name = ?";
     connection.query( deleteQuery, [name], ( err, result ) => {
         if ( err )
-            res.json(err);
+            return res.json(err);
         res.json({message : "Deleted sucessfully"});
     } )
 
