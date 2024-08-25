@@ -1,12 +1,18 @@
 const calculateDistance = require("../Distance/calculateDistance");
 const connection = require("../Model/schoolModel");
 
-const createSchool =  ( req, res ) => {
+const addSchool =  ( req, res ) => {
 
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ message: "Please provide school details" });
-    }   
+    }
+    
     const {name, address, latitude, longitude} = req.body;
+
+    if ( typeof name !== 'string' || typeof address !== 'string' || name.length< 1 || address.length < 1 )
+        return res.json({message : "Enter a valid name and address"});
+    if ( typeof latitude !== 'number' || typeof longitude !== 'number')
+        return res.json({message : "Enter a valid latitude and longitude"})
     
     const checkQuery = "SELECT * FROM school WHERE name = ?";
     const insertQuery = "INSERT INTO school ( name, address, latitude, longitude ) values (?, ?, ?, ?)";
@@ -14,16 +20,16 @@ const createSchool =  ( req, res ) => {
     connection.query( checkQuery, [name], ( err, result ) => {
         if ( err )
             return res.json(err);
-    if ( result.length > 0 )
-        return res.json({message : "Already exists !!"});
-    else {
-        
-        connection.query(insertQuery, [name, address, latitude, longitude], (err, result) => {
-        if ( err )
-            throw err;
-        res.json({message : "School inserted"});
-    } )
-    }
+
+        if ( result.length > 0 )
+            return res.json({message : "Already exists !!"});
+        else {
+                connection.query(insertQuery, [name, address, latitude, longitude], (err, result) => {
+                if ( err )
+                    throw err;
+                res.json({message : "School inserted"});
+                })
+            }
             
     } )
 };
@@ -39,7 +45,7 @@ const getAllSchool = ( req, res ) => {
 
 }
 
-const getNearbySchool = ( req, res ) => {
+const listSchool = ( req, res ) => {
     
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ message: "Please provide user geoloaction details" });
@@ -47,6 +53,11 @@ const getNearbySchool = ( req, res ) => {
 
     const userLatitude = req.body.latitude;
     const userLongitude = req.body.longitude;
+
+    if ( !userLatitude || !userLongitude )
+            return res.json({message : "Both latitude and longitude is required"})
+    if ( typeof userLatitude !== 'number' || typeof userLongitude !== 'number' )
+            return res.json({message : "Enter a valid latitude and longitude"})
     
     calculateDistance( userLatitude, userLongitude, ( error, result ) => {
         if ( error )
@@ -64,25 +75,32 @@ const deleteSchool = ( req, res ) => {
     }   
 
     const { name } = req.body;
+
+    if ( typeof name !== 'string' || name.length < 1 ) {
+        return res.json({message : "Enter a valid school name"})
+    }
+
     const deleteQuery = "DELETE FROM school WHERE name = ?";
     connection.query( deleteQuery, [name], ( err, result ) => {
-        if ( err )
+        if ( err ) {
             return res.json(err);
+        }
+
+        if ( result.affectedRows === 0 ){
+            return res.json({message : "School does not exist"});
+        }
+
         const updateIdQuery = "ALTER TABLE school AUTO_INCREMENT = 1";
         connection.query ( updateIdQuery, (err, res) => {
-        if ( err )
+        if ( err ){
             console.log(err);
-        console.log("Id updated");  
-    } )
-        res.json({message : "Deleted sucessfully"});
-    } )
-
-    const updateIdQuery = "ALTER TABLE school AUTO_INCREMENT = 1";
-    connection.query ( updateIdQuery, (err, res) => {
-        if ( err )
-                console.log(err);
+        }
+        else{
             console.log("Id updated");
-})
+        }
+        res.json({message : "Deleted sucessfully"});
+        } );
+    } );    
 }
 
-module.exports = { createSchool, getNearbySchool, deleteSchool, getAllSchool }
+module.exports = { addSchool, listSchool, deleteSchool, getAllSchool }
